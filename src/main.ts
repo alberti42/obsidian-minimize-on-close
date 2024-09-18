@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-inferrable-types */
-
 // Import necessary Obsidian API components
 import { DEFAULT_SETTINGS } from "default";
 import {
@@ -14,7 +12,7 @@ import {
 } from "obsidian";
 import { MinimizeOnCloseSettings } from "types";
 
-import { remote } from "electron"; // For type definition only
+import * as electron from "electron";
 import * as EventEmitter from "node:events";
 
 // Main plugin class
@@ -41,11 +39,34 @@ export default class MinimizeOnClose extends Plugin {
         // Add setting tab
         this.addSettingTab(new MinimizeOnCloseSettingTab(this.app, this));
 
+        this.addCommands();
         
         this.app.workspace.onLayoutReady(() => {
-            this.current_window = remote.getCurrentWindow();
+            this.current_window = electron.remote.getCurrentWindow();
             this.registerEvents();
-        })
+        });
+    }
+
+    addCommands() {
+        this.addCommand({
+            id: 'minimize-on-close-to-icon',
+            name: "Minimize window to icon right now",
+            callback: () => {
+                if(this.current_window) {
+                    this.current_window.minimize();
+                }
+            }
+        });
+
+        this.addCommand({
+            id: 'minimize-on-close-exit',
+            name: "Exit app",
+            callback: () => {
+                if(this.current_window) {
+                    electron.remote.app.quit();
+                }
+            }
+        });
     }
 
     registerEvents() {

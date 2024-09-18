@@ -59,11 +59,13 @@ const context = await esbuild.context({
                 // Hook into the resolve phase for electron import replacement
                 build.onLoad({ filter: /\.ts$/ }, async (args) => {
                     let source = await fs.readFile(args.path, 'utf8');
-                    source = source.replace(/import\s*\{\s*remote\s*\}\s*from\s*"electron";/g, 'const { remote } = require("electron");');
                     
+                    // Match the variable name after `import * as` and replace it with require
+                    source = source.replace(/\n\s*import\s+\*\s+as\s+(\w+)\s+from ("electron"|'electron');/g, '\nconst $1 = require("electron");');
+
                     return {
                         contents: source,
-                        loader: 'ts' // Use 'ts' for TypeScript, or 'js' for JavaScript files
+                        loader: 'ts' // Use 'ts' for TypeScript files
                     };
                 });
             }
