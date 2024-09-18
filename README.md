@@ -9,6 +9,11 @@ This plugin for [Obsidian](https://obsidian.md) minimizes the application window
 - **MacOS-Standard Behavior**: Automatically minimize the Obsidian window when all open panes are closed, consistent with macOS application behavior.
 - **Cross-Platform Support**: Works on macOS, Windows, and Linux. You can choose whether to restrict this behavior to macOS or apply it to all operating systems.
 - **Configurable Options**: Customize the plugin to enable the minimize-on-close behavior only for macOS, or extend it to other platforms based on your preference.
+- **Command Palette Support**: Includes two commands accessible from the command palette:
+  - **Minimize to Icon**: Minimize the Obsidian window to the dock or taskbar.
+  - **Exit Obsidian**: Completely exit the Obsidian application.
+  These commands can be assigned custom hotkeys for quick access (e.g., "⌘Q" to minimize and "⌘⌥Q" to exit) from the Hotkeys configuration pane.
+
 
 ## Installation
 
