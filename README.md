@@ -1,4 +1,4 @@
-# Obsidian plugin - minimize on close
+# Obsidian plugin: Minimize on Close
 
 ## Overview
 
