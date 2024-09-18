@@ -87,7 +87,6 @@ export default class MinimizeOnClose extends Plugin {
 
         // Minimize the window
         this.current_window.minimize();
-        console.log(this.current_window.minimize);
         this.minimized = true;
     }
 
