@@ -9,7 +9,6 @@ import {
     View,
     Platform,
 } from "obsidian";
-import { platform } from "os";
 
 // Main plugin class
 export default class MinimizeOnClose extends Plugin {
@@ -22,6 +21,7 @@ export default class MinimizeOnClose extends Plugin {
     constructor(app: App, manifest: PluginManifest) {
 		super(app, manifest);
 
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         const { remote } = require("electron");
 
         this.remote = remote;
