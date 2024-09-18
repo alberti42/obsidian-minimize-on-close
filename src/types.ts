@@ -2,6 +2,8 @@
 
 // Plugin settings
 export interface MinimizeOnCloseSettings {
-    onlyForMac: boolean,
-    compatibility: '1.0',
+    mac: boolean,
+    linux: boolean,
+    win: boolean,
+    compatibility: '1.2',
 }

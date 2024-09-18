@@ -71,7 +71,11 @@ export default class MinimizeOnClose extends Plugin {
 
     registerEvents() {
         if(this.eventsRegistered) return;
-        if (!this.settings.onlyForMac || Platform.isMacOS) {
+        if(
+            Platform.isMacOS && this.settings.mac
+            || Platform.isLinux && this.settings.linux 
+            || Platform.isWin && this.settings.win 
+        ) {
             // Listen to layout changes (pane closed/opened)
             this.app.workspace.on("layout-change", this.onLayoutChange);
             if(this.current_window) {
@@ -134,44 +138,138 @@ class MinimizeOnCloseSettingTab extends PluginSettingTab {
     }
 
 	display(): void {
+        // const createHotkeysPaneFragment = (): DocumentFragment => {
+        //     return createFragment((frag) => {
+        //         const em = frag.createEl('em');
+        //         const link = frag.createEl('a', { href: '#', text: 'Community plugins'});
+        //         link.onclick = () => {
+        //             this.app.setting.openTabById('community-plugins');
+        //         };
+        //         em.appendChild(link);
+        //     });
+        // };
+
         const { containerEl } = this;
         
 		containerEl.empty();
         containerEl.classList.add('minimize-on-close-settings');
 
-        const onlyForMac_setting = new Setting(containerEl)
-            .setName('Only for Apple devices')
-            .setDesc("If this option is disabled, Obsidian's window in minimized to icon after all panes are closed for all operating systems (just just Apple).");
+        new Setting(containerEl).setName('Instructions').setHeading();
 
-        let onlyForMac_toggle: ToggleComponent;
-        onlyForMac_setting.addToggle(toggle => {
-            onlyForMac_toggle = toggle;
+        new Setting(containerEl).setName(createFragment((frag:DocumentFragment) => {
+                frag.appendText("You can select for which platform the plugin minimizes the app to an icon after \
+                    all panes are closed. Moreover, you can assign custom hotkeys for quick access \
+                    (e.g., '⌘Q' to minimize and '⌘⌥Q' to exit) from the ");
+                const em = createEl('em');
+                const link = frag.createEl('a', { href: '#', text: 'Hotkeys'});
+                link.onclick = () => {
+                    this.app.setting.openTabById('hotkeys');
+                };
+                em.appendChild(link);
+                frag.appendChild(em);
+                frag.appendText(' configuration pane.');
+            }));
+
+
+        const div = document.createElement('div');
+        div.classList.add('plugin-comment-instructions');
+
+
+        new Setting(containerEl).setName('Platforms').setHeading();
+
+        const mac_setting = new Setting(containerEl)
+            .setName('Enable on Apple computers')
+            .setDesc("If this option is enabled, the app window in minimized to icon after all panes are closed on Apple computers.");
+
+        let mac_toggle: ToggleComponent;
+        mac_setting.addToggle(toggle => {
+            mac_toggle = toggle;
             toggle
-            .setValue(this.plugin.settings.onlyForMac)
+            .setValue(this.plugin.settings.mac)
             .onChange(async (value: boolean) => {
-                this.plugin.settings.onlyForMac = value;
+                this.plugin.settings.mac = value;
                 this.plugin.saveSettings();
-                if(value) {
-                    // just for mac
-                    if(this.plugin.eventsRegistered && !Platform.isMacOS) {
-                        this.plugin.unregisterEvents();
-                    }
-                } else {
-                    // for all OS
-                    if(!this.plugin.eventsRegistered) {
+                if(Platform.isMacOS) {
+                    if(value) {
                         this.plugin.registerEvents();
+                    } else {
+                        this.plugin.unregisterEvents();
                     }
                 }
             })
         });
 
-        onlyForMac_setting.addExtraButton((button) => {
+        mac_setting.addExtraButton((button) => {
             button
                 .setIcon("reset")
                 .setTooltip("Reset to default value")
                 .onClick(() => {
-                    const value = DEFAULT_SETTINGS.onlyForMac;                    
-                    onlyForMac_toggle.setValue(value);
+                    const value = DEFAULT_SETTINGS.mac;                    
+                    mac_toggle.setValue(value);
+                });
+        });
+
+        const linux_setting = new Setting(containerEl)
+            .setName('Enable on Linux computers')
+            .setDesc("If this option is enabled, the app window in minimized to icon after all panes are closed on Linux computers.");
+
+        let linux_toggle: ToggleComponent;
+        linux_setting.addToggle(toggle => {
+            linux_toggle = toggle;
+            toggle
+            .setValue(this.plugin.settings.linux)
+            .onChange(async (value: boolean) => {
+                this.plugin.settings.linux = value;
+                this.plugin.saveSettings();
+                if(Platform.isLinux) {
+                    if(value) {
+                        this.plugin.registerEvents();
+                    } else {
+                        this.plugin.unregisterEvents();
+                    }
+                }
+            })
+        });
+
+        linux_setting.addExtraButton((button) => {
+            button
+                .setIcon("reset")
+                .setTooltip("Reset to default value")
+                .onClick(() => {
+                    const value = DEFAULT_SETTINGS.linux;                    
+                    linux_toggle.setValue(value);
+                });
+        });
+
+        const win_setting = new Setting(containerEl)
+            .setName('Enable on Windows computers')
+            .setDesc("If this option is enabled, the app window in minimized to icon after all panes are closed on Windows computers.");
+
+        let win_toggle: ToggleComponent;
+        win_setting.addToggle(toggle => {
+            win_toggle = toggle;
+            toggle
+            .setValue(this.plugin.settings.win)
+            .onChange(async (value: boolean) => {
+                this.plugin.settings.win = value;
+                this.plugin.saveSettings();
+                if(Platform.isWin) {
+                    if(value) {
+                        this.plugin.registerEvents();
+                    } else {
+                        this.plugin.unregisterEvents();
+                    }
+                }
+            })
+        });
+
+        win_setting.addExtraButton((button) => {
+            button
+                .setIcon("reset")
+                .setTooltip("Reset to default value")
+                .onClick(() => {
+                    const value = DEFAULT_SETTINGS.win;                    
+                    win_toggle.setValue(value);
                 });
         });
 
