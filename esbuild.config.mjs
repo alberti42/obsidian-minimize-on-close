@@ -73,12 +73,6 @@ const context = await esbuild.context({
                 from: ['./manifest.json'],
                 to: ['./manifest.json']
             }
-        }),
-        copy({
-            assets: {
-                from: ['./styles/styles.css'],
-                to: ['./styles.css']
-            }
         })
     ],
 });

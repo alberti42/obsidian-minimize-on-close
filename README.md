@@ -2,6 +2,64 @@
 
 ## Overview
 
+This plugin for [Obsidian](https://obsidian.md) minimizes the application window to the dock or taskbar when all open panes are closed. This behavior is particularly standard on macOS and can now be optionally applied across all platforms.
+
+## Features
+
+- **MacOS-Standard Behavior**: Automatically minimize the Obsidian window when all open panes are closed, consistent with macOS application behavior.
+- **Cross-Platform Support**: Works on macOS, Windows, and Linux. You can choose whether to restrict this behavior to macOS or apply it to all operating systems.
+- **Configurable Options**: Customize the plugin to enable the minimize-on-close behavior only for macOS, or extend it to other platforms based on your preference.
+
+## Installation
+
+### From Obsidian Community Plugins
+
+1. Open Obsidian.
+2. Go to `Settings` > `Community Plugins` > `Browse`.
+3. Search for **Minimize on Close**.
+4. Click `Install`, then `Enable`.
+
+### Manual Installation
+
+#### Option 1: Download Pre-Built Files
+
+1. Download the latest release from the [GitHub releases page](https://github.com/yourusername/your-repo/releases).
+2. In the release, you'll find the `main.js` and `manifest.json` files.
+3. Copy both `main.js` and `manifest.json` to a new folder in your vault's `.obsidian/plugins/` directory (e.g., `.obsidian/plugins/minimize-on-close`).
+4. Enable the plugin in Obsidian via `Settings` > `Community Plugins`.
+
+#### Option 2: Build from Source
+
+1. Clone this repository or download the source code.
+2. Run the following commands to install the necessary dependencies and build the plugin. The build process will generate the `main.js` and `manifest.json` files inside the `/dist` subfolder within the repository directory:
+
+   ```bash
+   npm install
+   npm run build
+
+## Usage
+
+1. Once the plugin is installed and enabled, you can configure it in `Settings` > `Minimize on Close`.
+2. Choose whether you want the minimize behavior only on macOS (default) or across all platforms.
+
+### MacOS Behavior (Default)
+
+By default, the plugin mimics macOS behavior, minimizing the Obsidian window when all panes are closed. This provides a consistent experience for Mac users.
+
+## Compatibility
+
+- **macOS**: Tested and works as expected.
+- **Windows**: Tested and works as expected.
+- **Linux**: Tested and works as expected.
+
+## Contribution
+
+Feel free to open an issue or submit a pull request if you encounter any bugs or have suggestions for improvement!
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
 ## Donations
 I would be grateful for any donation to support the development of this plugin.
 
