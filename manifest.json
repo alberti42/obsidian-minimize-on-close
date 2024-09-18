@@ -3,7 +3,7 @@
   "name": "Minimize on Close",
   "version": "1.1.0",
   "minAppVersion": "1.5.0",
-  "description": "Minimizes Obsidian's window to icon after closing the last open pane",
+  "description": "Minimizes app window to an icon after closing the last open pane",
   "author": "Andrea Alberti",
   "authorUrl": "https://www.linkedin.com/in/dr-andrea-alberti/",
   "fundingUrl": "https://buymeacoffee.com/alberti",
