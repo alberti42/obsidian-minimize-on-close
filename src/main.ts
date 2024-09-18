@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-inferrable-types */
 
 // Import necessary Obsidian API components
+import { DEFAULT_SETTINGS } from "default";
 import {
 	App,
 	Plugin,
@@ -8,23 +9,24 @@ import {
 	PluginManifest,
     View,
     Platform,
+    Setting,
+    ToggleComponent,
 } from "obsidian";
+import { MinimizeOnCloseSettings } from "types";
+
+import { remote } from "electron"; // For type definition only
+import * as EventEmitter from "node:events";
 
 // Main plugin class
 export default class MinimizeOnClose extends Plugin {
 
     private minimized = false;
-    private current_window: any | null = null;
-    private remote: any;
-    private eventsRegistered = false;
+    private current_window: Electron.BrowserWindow | null = null;
+    public eventsRegistered = false;
+    public settings: MinimizeOnCloseSettings = { ...DEFAULT_SETTINGS };
 	
     constructor(app: App, manifest: PluginManifest) {
 		super(app, manifest);
-
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const { remote } = require("electron");
-
-        this.remote = remote;
 
         // Bind the context of `onLayoutChange` to the plugin instance
         this.onLayoutChange = this.onLayoutChange.bind(this);
@@ -41,11 +43,8 @@ export default class MinimizeOnClose extends Plugin {
 
         
         this.app.workspace.onLayoutReady(() => {
-            this.current_window = this.remote.getCurrentWindow();
-
-            if(this.current_window) {
-                this.registerEvents();
-            }
+            this.current_window = remote.getCurrentWindow();
+            this.registerEvents();
         })
     }
 
@@ -54,8 +53,10 @@ export default class MinimizeOnClose extends Plugin {
             if(this.eventsRegistered) return;
             // Listen to layout changes (pane closed/opened)
             this.app.workspace.on("layout-change", this.onLayoutChange);
-            // Listen to the 'restore' event to detect when the window is restored
-            this.current_window.on('restore', this.onRestore);
+            if(this.current_window) {
+                // Listen to the 'restore' event to detect when the window is restored
+                this.current_window.on('restore', this.onRestore);
+            }
             this.eventsRegistered = true;
         }
     }
@@ -64,7 +65,8 @@ export default class MinimizeOnClose extends Plugin {
         if(!this.eventsRegistered) return;
         this.app.workspace.off("layout-change", this.onLayoutChange);
         if(this.current_window) {
-            this.current_window.off('restore', this.onRestore);
+            // `Electron.BrowserWindow` extends `NodeJS.EventEmitter`, which provides `removeListener`
+            (this.current_window as unknown as EventEmitter).removeListener('restore', this.onRestore); // Use removeListener instead of off
         }
         this.eventsRegistered = false;
     }
@@ -90,14 +92,14 @@ export default class MinimizeOnClose extends Plugin {
 
 	onunload() {        
         this.unregisterEvents();
-  	}
+    }
 
 	async loadSettings() {
-        
+        this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
 	}
 
     async saveSettings() {
-       
+       await this.saveData(this.settings);
     }
 }
 
@@ -115,6 +117,43 @@ class MinimizeOnCloseSettingTab extends PluginSettingTab {
         
 		containerEl.empty();
         containerEl.classList.add('minimize-on-close-settings');
+
+        const onlyForMac_setting = new Setting(containerEl)
+            .setName('Only for Apple devices')
+            .setDesc("If this option is disabled, Obsidian's window in minimized to icon after all panes are closed for all operating systems (just just Apple).");
+
+        let onlyForMac_toggle: ToggleComponent;
+        onlyForMac_setting.addToggle(toggle => {
+            onlyForMac_toggle = toggle;
+            toggle
+            .setValue(this.plugin.settings.onlyForMac)
+            .onChange(async (value: boolean) => {
+                this.plugin.settings.onlyForMac = value;
+                this.plugin.saveSettings();
+                if(value) {
+                    // just for mac
+                    if(this.plugin.eventsRegistered && !Platform.isMacOS) {
+                        this.plugin.unregisterEvents();
+                    }
+                } else {
+                    // for all OS
+                    if(!this.plugin.eventsRegistered) {
+                        this.plugin.registerEvents();
+                    }
+                }
+            })
+        });
+
+        onlyForMac_setting.addExtraButton((button) => {
+            button
+                .setIcon("reset")
+                .setTooltip("Reset to default value")
+                .onClick(() => {
+                    const value = DEFAULT_SETTINGS.onlyForMac;                    
+                    onlyForMac_toggle.setValue(value);
+                });
+        });
+
 
 	}
 

@@ -1,4 +1,7 @@
 // types.ts
 
-import { DEFAULT_SETTINGS } from "default";
-
+// Plugin settings
+export interface MinimizeOnCloseSettings {
+    onlyForMac: boolean,
+    compatibility: '1.0',
+}

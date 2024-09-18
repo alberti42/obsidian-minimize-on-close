@@ -1,4 +1,9 @@
 // defaults.ts
 
+import { MinimizeOnCloseSettings } from "types";
 
-export const DEFAULT_SETTINGS = 1;
+// Default plugin settings
+export const DEFAULT_SETTINGS: MinimizeOnCloseSettings = {
+    onlyForMac: true,
+    compatibility: '1.0',
+};
