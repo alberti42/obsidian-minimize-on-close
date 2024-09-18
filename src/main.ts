@@ -49,8 +49,8 @@ export default class MinimizeOnClose extends Plugin {
     }
 
     registerEvents() {
-        if (Platform.isMacOS) {
-            if(this.eventsRegistered) return;
+        if(this.eventsRegistered) return;
+        if (!this.settings.onlyForMac || Platform.isMacOS) {
             // Listen to layout changes (pane closed/opened)
             this.app.workspace.on("layout-change", this.onLayoutChange);
             if(this.current_window) {
@@ -87,6 +87,7 @@ export default class MinimizeOnClose extends Plugin {
 
         // Minimize the window
         this.current_window.minimize();
+        console.log(this.current_window.minimize);
         this.minimized = true;
     }
 
