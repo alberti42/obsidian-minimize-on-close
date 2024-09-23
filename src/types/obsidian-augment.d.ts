@@ -8,6 +8,8 @@ declare module "obsidian" {
     }
     interface Setting {
         openTabById(id: string): void;
+        contentEl:HTMLElement;
+        tabContentContainer:HTMLElement;
     }    
     interface WorkspaceLeaf {
         parentSplit: WorkspaceSplit;
