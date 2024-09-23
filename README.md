@@ -41,6 +41,7 @@ This plugin for [Obsidian](https://obsidian.md) minimizes the application window
    ```bash
    npm install
    npm run build
+   ```
 
 ## Usage
 
