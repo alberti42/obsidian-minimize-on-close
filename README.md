@@ -28,7 +28,7 @@ This plugin for [Obsidian](https://obsidian.md) minimizes the application window
 
 #### Option 1: Download Pre-Built Files
 
-1. Download the latest release from the [GitHub releases page](https://github.com/yourusername/your-repo/releases).
+1. Download the latest release from the [GitHub releases page](https://github.com/alberti42/obsidian-minimize-on-close/releases).
 2. In the release, you'll find the `main.js` and `manifest.json` files.
 3. Copy both `main.js` and `manifest.json` to a new folder in your vault's `.obsidian/plugins/` directory (e.g., `.obsidian/plugins/minimize-on-close`).
 4. Enable the plugin in Obsidian via `Settings` > `Community Plugins`.
