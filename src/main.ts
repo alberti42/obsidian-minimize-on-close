@@ -54,7 +54,7 @@ export default class MinimizeOnClose extends Plugin {
         const self = this;
         // Monkey-patch the detach method
         WorkspaceLeaf.prototype.detach = function() {
-            console.log("A leaf is being closed:", this);
+            // console.log("A leaf is being closed:", this);
             if(this.parentSplit.children.length==1) {
                 if(self.current_window) {
                     // Minimize the window
