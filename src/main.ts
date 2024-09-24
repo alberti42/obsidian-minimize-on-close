@@ -9,6 +9,7 @@ import {
     Platform,
     Setting,
     ToggleComponent,
+    WorkspaceLeaf,
 } from "obsidian";
 import { MinimizeOnCloseSettings } from "types";
 
@@ -22,12 +23,12 @@ export default class MinimizeOnClose extends Plugin {
     private current_window: Electron.BrowserWindow | null = null;
     public eventsRegistered = false;
     public settings: MinimizeOnCloseSettings = { ...DEFAULT_SETTINGS };
+    private originalDetach:(()=>void) | null = null;
 	
     constructor(app: App, manifest: PluginManifest) {
 		super(app, manifest);
 
         // Bind the context of `onLayoutChange` to the plugin instance
-        this.onLayoutChange = this.onLayoutChange.bind(this);
         this.onRestore = this.onRestore.bind(this);
 	}
 
@@ -43,8 +44,37 @@ export default class MinimizeOnClose extends Plugin {
         
         this.app.workspace.onLayoutReady(() => {
             this.current_window = electron.remote.getCurrentWindow();
-            this.registerEvents();
+            this.registerEvents();            
         });
+    }
+
+    patchDetatchMethod() {
+        if(this.originalDetach) return;
+        this.originalDetach = WorkspaceLeaf.prototype.detach;
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        const self = this;
+        // Monkey-patch the detach method
+        WorkspaceLeaf.prototype.detach = function() {
+            // console.log("A leaf is being closed:", this);
+            if(this.parentSplit.children.length==1) {
+                if(self.current_window) {
+                    // Minimize the window
+                    self.current_window.minimize();
+                    self.minimized = true;    
+                }
+            }            
+            // Call the original detach method to actually close the leaf
+            if(self.originalDetach) {
+                return self.originalDetach.call(this);    
+            }
+        }
+    }
+
+    unPatchDetatchMethod() {
+        if(this.originalDetach) {
+            // console.log("UNPATCHING");
+            WorkspaceLeaf.prototype.detach = this.originalDetach;
+        }
     }
 
     addCommands() {
@@ -76,8 +106,8 @@ export default class MinimizeOnClose extends Plugin {
             || Platform.isLinux && this.settings.linux 
             || Platform.isWin && this.settings.win 
         ) {
-            // Listen to layout changes (pane closed/opened)
-            this.app.workspace.on("layout-change", this.onLayoutChange);
+            // Detect when a leaf closes
+            this.patchDetatchMethod();
             if(this.current_window) {
                 // Listen to the 'restore' event to detect when the window is restored
                 this.current_window.on('restore', this.onRestore);
@@ -88,7 +118,8 @@ export default class MinimizeOnClose extends Plugin {
 
     unregisterEvents() {
         if(!this.eventsRegistered) return;
-        this.app.workspace.off("layout-change", this.onLayoutChange);
+        // Stop detecting when a leaf closes
+        this.unPatchDetatchMethod();
         if(this.current_window) {
             // `Electron.BrowserWindow` extends `NodeJS.EventEmitter`, which provides `removeListener`
             (this.current_window as unknown as EventEmitter).removeListener('restore', this.onRestore); // Use removeListener instead of off
@@ -99,20 +130,6 @@ export default class MinimizeOnClose extends Plugin {
     onRestore() {
         // console.log("Window Restored");
         this.minimized = false; // Reset minimized state when the window is restored
-    }
-
-    onLayoutChange() {
-        // Check whether the layout is ready and current window has been identified
-        if(!this.current_window) return;
-
-        const leaf = this.app.workspace.getActiveViewOfType(View)?.leaf;
-        
-        // Check if the last pane is closed and minimize if not already minimized
-        if (this.minimized || leaf?.getViewState().type !== "empty" || leaf?.parentSplit.children.length != 1 ) return;
-
-        // Minimize the window
-        this.current_window.minimize();
-        this.minimized = true;
     }
 
 	onunload() {        
