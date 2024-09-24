@@ -23,7 +23,7 @@ Click on the link [Minimize on Close Plugin](obsidian://show-plugin?id=minimize-
 
 1. Open Obsidian.
 2. Go to `Settings` > `Community Plugins` > `Browse`.
-3. Search for <a href="obsidian://show-plugin?id=minimize-on-close">**Minimize on Close**</a>.
+3. Search for **Minimize on Close**.
 4. Click `Install`, then `Enable`.
 
 ### Manual Installation
