@@ -19,7 +19,6 @@ import * as EventEmitter from "node:events";
 // Main plugin class
 export default class MinimizeOnClose extends Plugin {
 
-    private minimized = false;
     private current_window: Electron.BrowserWindow | null = null;
     public eventsRegistered = false;
     public settings: MinimizeOnCloseSettings = { ...DEFAULT_SETTINGS };
@@ -55,12 +54,11 @@ export default class MinimizeOnClose extends Plugin {
         const self = this;
         // Monkey-patch the detach method
         WorkspaceLeaf.prototype.detach = function() {
-            // console.log("A leaf is being closed:", this);
+            console.log("A leaf is being closed:", this);
             if(this.parentSplit.children.length==1) {
                 if(self.current_window) {
                     // Minimize the window
-                    self.current_window.minimize();
-                    self.minimized = true;    
+                    self.current_window.minimize(); 
                 }
             }            
             // Call the original detach method to actually close the leaf
@@ -74,6 +72,7 @@ export default class MinimizeOnClose extends Plugin {
         if(this.originalDetach) {
             // console.log("UNPATCHING");
             WorkspaceLeaf.prototype.detach = this.originalDetach;
+            this.originalDetach = null;
         }
     }
 
@@ -129,7 +128,6 @@ export default class MinimizeOnClose extends Plugin {
 
     onRestore() {
         // console.log("Window Restored");
-        this.minimized = false; // Reset minimized state when the window is restored
     }
 
 	onunload() {        
