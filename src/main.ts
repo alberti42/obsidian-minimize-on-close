@@ -20,9 +20,11 @@ export default class MinimizeOnClose extends Plugin {
     public eventsRegistered = false;
     public settings: MinimizeOnCloseSettings = { ...DEFAULT_SETTINGS };
     private originalDetach:(()=>void) | null = null;
+    private mainDoc:Document;
 	
     constructor(app: App, manifest: PluginManifest) {
 		super(app, manifest);
+        this.mainDoc = document;
 	}
 
     // Load plugin settings
@@ -36,7 +38,7 @@ export default class MinimizeOnClose extends Plugin {
         this.addCommands();
         
         this.app.workspace.onLayoutReady(() => {
-            this.registerEvents();            
+            this.registerEvents();
         });
     }
 
@@ -48,13 +50,25 @@ export default class MinimizeOnClose extends Plugin {
         // Monkey-patch the detach method
         WorkspaceLeaf.prototype.detach = function() {
             // Prevent minimization to icon if multiple windows are still opened
-            const allWindows = electron.remote.BrowserWindow.getAllWindows();
             
-            // console.log("A leaf is being closed:", this);
-            if(allWindows.length>-1 && this.parentSplit.children.length==1) {
-                // Minimize the window
-                electron.remote.getCurrentWindow().minimize(); 
-            }            
+            const thisDoc = this.view.containerEl.ownerDocument;
+
+            if(thisDoc===self.mainDoc) {
+                let num_md = 0; // number markdown-type leaves
+                let num_empty = 0; // number empty-type leaves
+                self.app.workspace.iterateAllLeaves((leaf:WorkspaceLeaf)=>{
+                    const doc = leaf.view.containerEl.ownerDocument;
+                    if(doc===thisDoc) {
+                        if(leaf.view.getViewType()==="markdown")  num_md++;
+                        else if(leaf.view.getViewType()==="empty") num_empty++;    
+                    }                
+                });
+                if(num_md+num_empty<=1) {
+                    // Minimize the main window
+                    electron.remote.getCurrentWindow().minimize(); 
+                }
+            }
+
             // Call the original detach method to actually close the leaf
             if(self.originalDetach) {
                 return self.originalDetach.call(this);    
