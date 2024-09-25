@@ -5,7 +5,6 @@ import {
 	Plugin,
 	PluginSettingTab,
 	PluginManifest,
-    View,
     Platform,
     Setting,
     ToggleComponent,
@@ -14,21 +13,16 @@ import {
 import { MinimizeOnCloseSettings } from "types";
 
 import * as electron from "electron";
-import * as EventEmitter from "node:events";
 
 // Main plugin class
 export default class MinimizeOnClose extends Plugin {
 
-    private current_window: Electron.BrowserWindow | null = null;
     public eventsRegistered = false;
     public settings: MinimizeOnCloseSettings = { ...DEFAULT_SETTINGS };
     private originalDetach:(()=>void) | null = null;
 	
     constructor(app: App, manifest: PluginManifest) {
 		super(app, manifest);
-
-        // Bind the context of `onLayoutChange` to the plugin instance
-        this.onRestore = this.onRestore.bind(this);
 	}
 
     // Load plugin settings
@@ -42,7 +36,6 @@ export default class MinimizeOnClose extends Plugin {
         this.addCommands();
         
         this.app.workspace.onLayoutReady(() => {
-            this.current_window = electron.remote.getCurrentWindow();
             this.registerEvents();            
         });
     }
@@ -54,12 +47,13 @@ export default class MinimizeOnClose extends Plugin {
         const self = this;
         // Monkey-patch the detach method
         WorkspaceLeaf.prototype.detach = function() {
+            // Prevent minimization to icon if multiple windows are still opened
+            const allWindows = electron.remote.BrowserWindow.getAllWindows();
+            
             // console.log("A leaf is being closed:", this);
-            if(this.parentSplit.children.length==1) {
-                if(self.current_window) {
-                    // Minimize the window
-                    self.current_window.minimize(); 
-                }
+            if(allWindows.length>-1 && this.parentSplit.children.length==1) {
+                // Minimize the window
+                electron.remote.getCurrentWindow().minimize(); 
             }            
             // Call the original detach method to actually close the leaf
             if(self.originalDetach) {
@@ -81,9 +75,7 @@ export default class MinimizeOnClose extends Plugin {
             id: 'minimize-on-close-to-icon',
             name: "Minimize window to icon right now",
             callback: () => {
-                if(this.current_window) {
-                    this.current_window.minimize();
-                }
+                electron.remote.getCurrentWindow().minimize();    
             }
         });
 
@@ -91,9 +83,7 @@ export default class MinimizeOnClose extends Plugin {
             id: 'minimize-on-close-exit',
             name: "Exit app",
             callback: () => {
-                if(this.current_window) {
-                    electron.remote.app.quit();
-                }
+                electron.remote.app.quit();
             }
         });
     }
@@ -107,10 +97,6 @@ export default class MinimizeOnClose extends Plugin {
         ) {
             // Detect when a leaf closes
             this.patchDetatchMethod();
-            if(this.current_window) {
-                // Listen to the 'restore' event to detect when the window is restored
-                this.current_window.on('restore', this.onRestore);
-            }
             this.eventsRegistered = true;
         }
     }
@@ -119,15 +105,7 @@ export default class MinimizeOnClose extends Plugin {
         if(!this.eventsRegistered) return;
         // Stop detecting when a leaf closes
         this.unPatchDetatchMethod();
-        if(this.current_window) {
-            // `Electron.BrowserWindow` extends `NodeJS.EventEmitter`, which provides `removeListener`
-            (this.current_window as unknown as EventEmitter).removeListener('restore', this.onRestore); // Use removeListener instead of off
-        }
         this.eventsRegistered = false;
-    }
-
-    onRestore() {
-        // console.log("Window Restored");
     }
 
 	onunload() {        
