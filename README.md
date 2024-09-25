@@ -19,6 +19,8 @@ This plugin for [Obsidian](https://obsidian.md) minimizes the application window
 
 ### From Obsidian Community Plugins
 
+Either copy the link `obsidian://show-plugin?id=minimize-on-close` into your browser or follow the instructions below:
+
 1. Open Obsidian.
 2. Go to `Settings` > `Community Plugins` > `Browse`.
 3. Search for **Minimize on Close**.
