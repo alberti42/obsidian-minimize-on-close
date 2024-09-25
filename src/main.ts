@@ -211,11 +211,6 @@ class MinimizeOnCloseSettingTab extends PluginSettingTab {
                 frag.appendText(' configuration pane.');
             }));
 
-
-        const div = document.createElement('div');
-        div.classList.add('plugin-comment-instructions');
-
-
         new Setting(containerEl).setName('Platforms').setHeading();
 
         const mac_setting = new Setting(containerEl)
