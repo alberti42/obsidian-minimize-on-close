@@ -10,7 +10,7 @@ import {
     ToggleComponent,
     WorkspaceLeaf,
 } from "obsidian";
-import { MinimizeOnCloseSettings } from "types";
+import { isHotkeysSettingTab, MinimizeOnCloseSettings } from "types";
 
 import * as electron from "electron";
 
@@ -171,6 +171,7 @@ class MinimizeOnCloseSettingTab extends PluginSettingTab {
                 const link = frag.createEl('a', { href: '#', text: 'Hotkeys'});
                 link.onclick = () => {
 
+                    /*
                     // Create a MutationObserver to monitor changes in the settings container
                     const observer = new MutationObserver((mutations: MutationRecord[], observer: MutationObserver) => {
                         let doBreak = false;
@@ -202,8 +203,12 @@ class MinimizeOnCloseSettingTab extends PluginSettingTab {
                         childList: true,
                         subtree: true
                     });
+                    */
 
-                    this.app.setting.openTabById('hotkeys');
+                    const tab = this.app.setting.openTabById('hotkeys');
+                    if(isHotkeysSettingTab(tab)) {
+                        tab.setQuery(this.plugin.manifest.id)
+                    }
                 };
 
                 em.appendChild(link);

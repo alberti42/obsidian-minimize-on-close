@@ -7,10 +7,18 @@ declare module "obsidian" {
         setting: Setting;
     }
     interface Setting {
-        openTabById(id: string): void;
+        openTabById(id: string): SettingTab;
         contentEl:HTMLElement;
         tabContentContainer:HTMLElement;
-    }    
+    }
+    interface SettingTab {
+        id: string;
+        name: string;
+        navEl: HTMLElement;
+    }
+    interface HotkeysSettingTab extends SettingTab {
+        setQuery: (str: string) => void;
+    }
     interface WorkspaceLeaf {
         parentSplit: WorkspaceSplit;
     }
