@@ -10,6 +10,7 @@ declare module "obsidian" {
         openTabById(id: string): SettingTab;
         contentEl:HTMLElement;
         tabContentContainer:HTMLElement;
+        activeTab: SettingTab;
     }
     interface SettingTab {
         id: string;

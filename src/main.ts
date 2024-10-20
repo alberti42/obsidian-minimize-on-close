@@ -126,6 +126,14 @@ export default class MinimizeOnClose extends Plugin {
         this.unregisterEvents();
     }
 
+    async onExternalSettingsChange() {
+        // Load settings
+        await this.loadSettings();
+
+        const activeTab = this.app.setting.activeTab;
+        if(activeTab && activeTab instanceof MinimizeOnCloseSettingTab) activeTab.display();
+    }
+
 	async loadSettings() {
         this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
 	}
