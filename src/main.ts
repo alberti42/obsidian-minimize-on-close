@@ -113,6 +113,136 @@ export default class MinimizeOnClose extends Plugin {
             this.patchDetatchMethod();
             this.eventsRegistered = true;
         }
+
+        // class PromiseManager {
+        //     promises:[];
+
+        //     constructor() {
+        //         this.promises = []; // Array to store pending promises
+        //     }
+
+        //     add(task) {
+        //         // `task` is a function that returns a Promise
+        //         this.promises.push(task());
+        //     }
+
+        //     addPromise(promise) {
+        //         // Adds a raw Promise directly
+        //         this.promises.push(promise);
+        //     }
+
+        //     isEmpty() {
+        //         return this.promises.length === 0;
+        //     }
+
+        //     waitForAll() {
+        //         // Returns a Promise that resolves when all added promises resolve
+        //         return Promise.all(this.promises);
+        //     }
+        // }
+
+        // let WS = this.app.workspace;
+
+        // window.onbeforeunload = async function (event) {
+        //     // Disable the handler to prevent recursion
+        //     window.onbeforeunload = null;
+
+        //     // Retrieve the workspace
+        //     const workspace = WS;
+
+        //     if (workspace) {
+        //         // Create a Promise manager instance
+        //         const promiseManager = new PromiseManager();
+
+        //         // Trigger the 'quit' event on the workspace
+        //         workspace.trigger("quit", promiseManager);
+
+        //         // Check if there are pending tasks
+        //         if (!promiseManager.isEmpty()) {
+        //             // Prevent the default unload behavior
+        //             event.preventDefault();
+        //             event.returnValue = "Saving...";
+
+        //             // Wait for all pending tasks to complete
+        //             try {
+        //                 await promiseManager.waitForAll();
+        //                 // Close the window after tasks are done
+        //                 window.close();
+        //             } catch (error) {
+        //                 console.error("Error during quit process:", error);
+        //                 // Optionally re-enable `onbeforeunload` here if needed
+        //             }
+        //         }
+        //     }
+        // };
+
+        // let original_onbeforeunload: ((this: WindowEventHandlers, ev: BeforeUnloadEvent) => any) | null = window.onbeforeunload;
+        // let handlingUnload = false; // Flag to prevent recursion
+
+        // window.onbeforeunload = async function (this: WindowEventHandlers, ev: BeforeUnloadEvent) {
+        //     if (handlingUnload) {
+        //         // Prevent recursion
+        //         return;
+        //     }
+        //     handlingUnload = true;
+
+        //     // Prevent the default unload behavior
+        //     ev.preventDefault();
+        //     ev.returnValue = false; // Required for older browsers/Electron
+
+        //     // Get the main BrowserWindow
+        //     // const win = electron.remote.getCurrentWindow();
+        //     // electron.remote.getCurrentWindow().minimize();
+
+        //     // // Call the original onbeforeunload if it exists
+        //     // if (original_onbeforeunload && false) {
+        //     //     try {
+        //     //         // Bind `this` to ensure the context is correct
+        //     //         original_onbeforeunload.call(this, ev);
+        //     //     } catch (error) {
+        //     //         console.error("Error in original onbeforeunload handler:", error);
+        //     //     }
+        //     // }
+
+        //     console.log("Intercepted onbeforeunload.");
+
+        //     // Your custom logic here (e.g., handling promises, showing messages, etc.)
+        //     try {
+        //         await new Promise((resolve) => setTimeout(resolve, 5000)); // Example async delay
+        //         console.log("Finished.");
+        //         await new Promise((resolve) => setTimeout(resolve, 5000)); // Example async delay
+        //         console.log("Done");
+        //     } catch (error) {
+        //         console.error("Error in custom unload logic:", error);
+        //     } finally {
+        //         handlingUnload = false; // Reset the flag
+        //     }
+        // };
+
+        // const app = electron.remote.app; // Access the Electron app object
+
+        // // Store the original app.quit method
+        // const originalQuit = app.quit;
+
+        // // Monkey patch app.quit
+        // app.quit = function () {
+        //     console.log("Intercepted app.quit. Preventing shutdown.");
+
+        //     // If you want to add custom logic before quitting:
+        //     // Uncomment the following block to perform cleanup or show a warning message.
+        //     /*
+        //     const userConfirmed = confirm("Are you sure you want to quit?");
+        //     if (!userConfirmed) {
+        //         return; // Prevent quitting if the user cancels
+        //     }
+        //     */
+
+        //     // To allow quitting, call the original quit method:
+        //     // originalQuit.call(app);
+        // };
+
+        
+
     }
 
     unregisterEvents() {
