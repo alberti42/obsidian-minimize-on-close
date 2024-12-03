@@ -179,6 +179,8 @@ export default class MinimizeOnClose extends Plugin {
         // let original_onbeforeunload: ((this: WindowEventHandlers, ev: BeforeUnloadEvent) => any) | null = window.onbeforeunload;
         // let handlingUnload = false; // Flag to prevent recursion
 
+        // console.log(electron);
+
         // window.onbeforeunload = async function (this: WindowEventHandlers, ev: BeforeUnloadEvent) {
         //     if (handlingUnload) {
         //         // Prevent recursion
@@ -191,32 +193,36 @@ export default class MinimizeOnClose extends Plugin {
         //     ev.returnValue = false; // Required for older browsers/Electron
 
         //     // Get the main BrowserWindow
-        //     // const win = electron.remote.getCurrentWindow();
+        //     const win = electron.remote.getCurrentWindow();
         //     // electron.remote.getCurrentWindow().minimize();
 
-        //     // // Call the original onbeforeunload if it exists
-        //     // if (original_onbeforeunload && false) {
-        //     //     try {
-        //     //         // Bind `this` to ensure the context is correct
-        //     //         original_onbeforeunload.call(this, ev);
-        //     //     } catch (error) {
-        //     //         console.error("Error in original onbeforeunload handler:", error);
-        //     //     }
-        //     // }
+        //     // Call the original onbeforeunload if it exists
+        //     if (original_onbeforeunload) {
+        //         try {
+        //             // Bind `this` to ensure the context is correct
+        //             original_onbeforeunload.call(this, ev);
 
-        //     console.log("Intercepted onbeforeunload.");
-
-        //     // Your custom logic here (e.g., handling promises, showing messages, etc.)
-        //     try {
-        //         await new Promise((resolve) => setTimeout(resolve, 5000)); // Example async delay
-        //         console.log("Finished.");
-        //         await new Promise((resolve) => setTimeout(resolve, 5000)); // Example async delay
-        //         console.log("Done");
-        //     } catch (error) {
-        //         console.error("Error in custom unload logic:", error);
-        //     } finally {
-        //         handlingUnload = false; // Reset the flag
+        //             console.log("WAITING FOR 10s...")
+        //             await new Promise((resolve) => setTimeout(resolve, 10000)); // Example async delay
+        //             console.log("FINISHED WAITING FOR 10s...")
+        //             await new Promise((resolve) => setTimeout(resolve, 1000)); // Example async delay
+                    
+        //         } catch (error) {
+        //             console.error("Error in original onbeforeunload handler:", error);
+        //         }
         //     }
+
+        //     // // Your custom logic here (e.g., handling promises, showing messages, etc.)
+        //     // try {
+        //     //     await new Promise((resolve) => setTimeout(resolve, 5000)); // Example async delay
+        //     //     console.log("Finished.");
+        //     //     await new Promise((resolve) => setTimeout(resolve, 5000)); // Example async delay
+        //     //     console.log("Done");
+        //     // } catch (error) {
+        //     //     console.error("Error in custom unload logic:", error);
+        //     // } finally {
+        //     //     handlingUnload = false; // Reset the flag
+        //     // }
         // };
 
         // const app = electron.remote.app; // Access the Electron app object
